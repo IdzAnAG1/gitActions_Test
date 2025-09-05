@@ -28,3 +28,6 @@ jobs:
 
       - name: Get Dependencies
         run : go mod download
+
+      - name : Go Project
+        run : go run .
