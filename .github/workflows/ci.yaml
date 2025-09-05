@@ -40,6 +40,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Get Dependencies
+        run : go mod download
+
       - name: SetupGolang
         uses: actions/setup-go@v5
         with:
@@ -48,16 +51,16 @@ jobs:
       - name: Go Build
         run: go build -o TestApp
 
-      - name : Deploy
-        uses: appleboy/ssh-action@v3
+      - name: Deploy
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.USERNAME }}
+          username: ${{ secrets.SSH_USERNAME }}
           port: ${{ secrets.SSH_PORT }}
-          key : ${{ secrets.SSH_PRIVATE_KEY }}
-          script:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
             pkill -f TestApp || true
             cp /tmp/TestApp ~/TestApp
             chmod +x ~/myapp
             nohup ~/myapp > ~/app.log 2>&1 &
-          scp : TestApp:/tmp/TestApp
+          scp: TestApp:/tmp/TestApp
