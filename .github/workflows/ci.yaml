@@ -32,5 +32,32 @@ jobs:
       - name : Go Build
         run: go build -v .
 
-      - name : Go Project
-        run : go run .
+  deployment :
+    needs : build_and_tests
+    runs-on: ubuntu-latest
+    if : github.event_name == 'push'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: SetupGolang
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Go Build
+        run: go build -o TestApp
+
+      - name : Deploy
+        uses: appleboy/ssh-action@v3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.SSH_PORT }}
+          key : ${{ secrets.SSH_PRIVATE_KEY }}
+          script:
+            pkill -f TestApp || true
+            cp /tmp/TestApp ~/TestApp
+            chmod +x ~/myapp
+            nohup ~/myapp > ~/app.log 2>&1 &
+          scp : TestApp:/tmp/TestApp
