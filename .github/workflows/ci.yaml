@@ -55,20 +55,19 @@ jobs:
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "TestApp"
-          target: "~/TestApp"
+          target: "/home/${{ secrets.SSH_USERNAME }}/"
 
       - name: Restart app via SSH
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
-            pkill -f "^~/TestApp" || true
-            chmod +x ~/TestApp
-            nohup ~/TestApp > ~/app.log 2>&1 &
+            pkill -f "^/home/${USER}/TestApp" || true
+            chmod +x /home/${USER}/TestApp
+            nohup /home/${USER}/TestApp > /home/${USER}/app.log 2>&1 &
