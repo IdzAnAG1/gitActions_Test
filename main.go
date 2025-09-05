@@ -1,4 +1,4 @@
-package gitActions_Test
+package main
 
 import "fmt"
 
