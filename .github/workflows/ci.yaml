@@ -29,5 +29,8 @@ jobs:
       - name: Get Dependencies
         run : go mod download
 
+      - name : Go Build
+        run: go build -v .
+
       - name : Go Project
         run : go run .
